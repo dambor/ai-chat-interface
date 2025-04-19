@@ -35,42 +35,134 @@ export const getApiEndpoint = () => {
 export const extractResponseContent = (data) => {
   console.log('Extracting content from response:', data);
   
-  // If data is a string, return it directly
-  if (typeof data === 'string') {
-    return data;
-  }
-  
-  // If data is null or undefined
-  if (!data) {
+  // Handle null/undefined case
+  if (data === null || data === undefined) {
     return 'Empty response received from the API.';
   }
   
-  // If data is an object, try to extract the content
+  // If data is a string, it might be:
+  // 1. Plain text response
+  // 2. JSON string that needs parsing
+  if (typeof data === 'string') {
+    // Try to parse as JSON first, in case it's a JSON string
+    try {
+      const parsedData = JSON.parse(data);
+      
+      // If successfully parsed, recursively extract from the parsed object
+      return extractResponseContent(parsedData);
+    } catch (e) {
+      // Not valid JSON, return as plain text
+      return data;
+    }
+  }
+  
+  // If data is an object
   if (typeof data === 'object') {
-    // Check common response formats
+    // First check for specific complex API structures (like the provided example)
+    // Check for session_id and outputs array pattern
+    if (data.session_id && Array.isArray(data.outputs)) {
+      // Navigate complex nested structure (common in advanced AI APIs)
+      try {
+        const firstOutput = data.outputs[0];
+        
+        // Check for different output structures
+        if (firstOutput.outputs && Array.isArray(firstOutput.outputs)) {
+          const innerOutput = firstOutput.outputs[0];
+          
+          // Try to extract text from various common API patterns
+          if (innerOutput.results?.message?.text) {
+            return innerOutput.results.message.text;
+          }
+          
+          if (innerOutput.results?.message?.data?.text) {
+            return innerOutput.results.message.data.text;
+          }
+          
+          if (innerOutput.artifacts?.message) {
+            return innerOutput.artifacts.message;
+          }
+          
+          // Check messages array
+          if (innerOutput.messages && Array.isArray(innerOutput.messages)) {
+            if (innerOutput.messages[0]?.message) {
+              return innerOutput.messages[0].message;
+            }
+          }
+        }
+        
+        // Direct artifacts pattern
+        if (firstOutput.artifacts?.message) {
+          return firstOutput.artifacts.message;
+        }
+      } catch (e) {
+        console.log('Error parsing complex API structure:', e);
+        // Continue to standard extraction methods
+      }
+    }
+    
+    // Common response fields ordered by priority
     const possibleFields = [
-      'output', 'response', 'answer', 'message', 'text', 'content',
-      'result', 'data', 'reply', 'generation', 'completion'
+      'output', 'response', 'text', 'content', 'message',
+      'answer', 'result', 'data', 'reply', 'generation', 'completion',
+      'artifacts'
     ];
     
-    // Try each field
+    // Check for direct content fields
     for (const field of possibleFields) {
       if (data[field] !== undefined) {
-        if (typeof data[field] === 'string') {
-          return data[field];
-        } else if (typeof data[field] === 'object') {
-          // Try to stringify nested object
+        const fieldValue = data[field];
+        
+        // If the field value is a string, return it
+        if (typeof fieldValue === 'string') {
+          return fieldValue;
+        }
+        
+        // Special handling for message field structure
+        if (field === 'message' && typeof fieldValue === 'object') {
+          if (fieldValue.text) return fieldValue.text;
+          if (fieldValue.content) return fieldValue.content;
+          if (fieldValue.data?.text) return fieldValue.data.text;
+        }
+        
+        // Special handling for artifacts field structure
+        if (field === 'artifacts' && typeof fieldValue === 'object') {
+          if (fieldValue.message) return fieldValue.message;
+        }
+        
+        // If the field value is an object, convert to prettified JSON
+        if (typeof fieldValue === 'object' && fieldValue !== null) {
+          // Try to further extract content from this nested object
+          const nestedContent = extractResponseContent(fieldValue);
+          
+          // If we got a meaningful extraction, return it
+          if (nestedContent && nestedContent !== 'Received response in an unknown format.') {
+            return nestedContent;
+          }
+          
+          // Otherwise return the prettified JSON
           try {
-            return JSON.stringify(data[field], null, 2);
+            return JSON.stringify(fieldValue, null, 2);
           } catch (e) {
-            // Continue to next field if stringify fails
+            // If stringify fails, continue to the next field
             continue;
           }
         }
       }
     }
     
-    // If we couldn't find a matching field, return the whole object
+    // If we couldn't extract content through known fields, check if this is an array
+    if (Array.isArray(data)) {
+      // For arrays, extract the first item or concatenate string values
+      if (data.length > 0) {
+        if (typeof data[0] === 'string') {
+          return data.join('\n\n');
+        } else {
+          return extractResponseContent(data[0]);
+        }
+      }
+    }
+    
+    // As a last resort, return the whole object as formatted JSON
     try {
       return JSON.stringify(data, null, 2);
     } catch (e) {
@@ -78,7 +170,7 @@ export const extractResponseContent = (data) => {
     }
   }
   
-  // Fallback
+  // Fallback for unexpected data types
   return 'Received response in an unknown format.';
 };
 

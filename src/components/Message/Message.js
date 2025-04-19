@@ -6,11 +6,42 @@ import { formatTime } from '../../utils/formatters';
 import './Message.css';
 
 /**
- * Simplified message component with better markdown handling
+ * Enhanced message component with better markdown handling
  */
 const Message = ({ message }) => {
   const { role, content, timestamp, isError } = message;
   
+  // Process the message content
+  const processContent = (content) => {
+    if (!content) return '';
+    
+    // If it's a JSON string, try to extract text
+    if (typeof content === 'string' && (content.startsWith('{') || content.startsWith('['))) {
+      try {
+        const jsonData = JSON.parse(content);
+        // Look for content in common API response fields
+        if (jsonData.text) return jsonData.text;
+        if (jsonData.content) return jsonData.content;
+        if (jsonData.message) {
+          if (typeof jsonData.message === 'string') return jsonData.message;
+          if (jsonData.message.text) return jsonData.message.text;
+          if (jsonData.message.content) return jsonData.message.content;
+        }
+        // If we couldn't find content, stringify the JSON with indentation
+        return JSON.stringify(jsonData, null, 2);
+      } catch (e) {
+        // Not valid JSON, use as is
+        return content;
+      }
+    }
+    
+    // Regular string content
+    return content;
+  };
+
+  // Process the message content
+  const processedContent = processContent(content);
+
   // Custom renderer components for ReactMarkdown
   const components = {
     code({node, inline, className, children, ...props}) {
@@ -48,10 +79,10 @@ const Message = ({ message }) => {
       </div>
       <div className="message-content">
         {role === 'user' ? (
-          <p>{content}</p>
+          <p>{processedContent}</p>
         ) : (
           <ReactMarkdown components={components}>
-            {content}
+            {processedContent}
           </ReactMarkdown>
         )}
       </div>
