@@ -3,7 +3,7 @@ import ApiConfig from '../components/ApiConfig/ApiConfig';
 import './SettingsPage.css';
 
 /**
- * Settings page with API configuration and fallback options
+ * Settings page with API configuration only
  */
 const SettingsPage = ({ useFallback, toggleFallback }) => {
   return (
@@ -18,37 +18,10 @@ const SettingsPage = ({ useFallback, toggleFallback }) => {
         </div>
         
         <div className="settings-section">
-          <div className="fallback-control">
-            <h2>Troubleshooting Options</h2>
-            
-            <div className="toggle-container">
-              <label className="toggle-switch">
-                <input
-                  type="checkbox"
-                  checked={useFallback}
-                  onChange={toggleFallback}
-                />
-                <span className="toggle-slider"></span>
-              </label>
-              <span className="toggle-label">
-                Use Fallback Tesla Analysis
-              </span>
-            </div>
-            
-            <p className="fallback-description">
-              When enabled, queries about Tesla stock will return a properly formatted analysis 
-              instead of using the API. This is useful if your API is returning template data 
-              instead of proper analysis.
-            </p>
-          </div>
-        </div>
-        
-        <div className="settings-section">
           <div className="api-response-info">
             <h2>API Response Guide</h2>
             <p>
               This application is designed to handle various API response formats from your backend.
-              If you're still seeing empty responses or templates, try enabling the fallback mode above.
             </p>
             
             <h3>Example Expected API Format</h3>
