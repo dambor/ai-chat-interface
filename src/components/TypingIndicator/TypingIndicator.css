@@ -1,0 +1,35 @@
+.typing-message {
+    background-color: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+  }
+  
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+  
+  .typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-gray-400);
+    border-radius: var(--border-radius-full);
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out;
+  }
+  
+  .typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  
+  .typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+  
+  @keyframes bounce {
+    0%, 80%, 100% { 
+      transform: scale(0);
+    } 40% { 
+      transform: scale(1.0);
+    }
+  }

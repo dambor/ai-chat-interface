@@ -1,0 +1,172 @@
+.message {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.user-message {
+  background-color: #f3f4f6;
+}
+
+.assistant-message {
+  background-color: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.message.error {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.message-sender {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.message-time {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.message-content {
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+/* Markdown styles */
+.message-content p {
+  margin-bottom: 16px;
+}
+
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.message-content h1 {
+  font-size: 24px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.message-content h2 {
+  font-size: 20px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.message-content h3 {
+  font-size: 18px;
+}
+
+.message-content h4 {
+  font-size: 16px;
+}
+
+.message-content ul,
+.message-content ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.message-content li {
+  margin-bottom: 8px;
+}
+
+/* Table styles */
+.table-container {
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.message-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0;
+  table-layout: auto;
+}
+
+.message-content th,
+.message-content td {
+  border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.message-content th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.message-content tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Code and pre styles */
+.message-content pre {
+  margin: 16px 0;
+  border-radius: 6px;
+  overflow: auto;
+}
+
+.message-content code {
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.message-content p code,
+.message-content li code {
+  background-color: #f3f4f6;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #1f2937;
+}
+
+/* Blockquote styles */
+.message-content blockquote {
+  margin: 16px 0;
+  padding-left: 16px;
+  border-left: 4px solid #e5e7eb;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Links */
+.message-content a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.message-content a:hover {
+  text-decoration: underline;
+}
+
+/* Images */
+.message-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 16px 0;
+  border-radius: 6px;
+}

@@ -1,0 +1,36 @@
+.message-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .welcome-message {
+    text-align: center;
+    margin: auto;
+    max-width: 600px;
+    padding: var(--spacing-3xl) var(--spacing-xl);
+  }
+  
+  .welcome-message h2 {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--spacing-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+  
+  .welcome-message p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+  }
+  
+  .error-message {
+    padding: var(--spacing-lg);
+    background-color: var(--color-error-light);
+    color: var(--color-error);
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-md) 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }

@@ -1,70 +1,114 @@
-# Getting Started with Create React App
+# AI Chat Interface
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A Claude-like chat interface built with React that connects to your AI API endpoint.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Clean, modern UI similar to claude.ai
+- Conversation history with multiple chat sessions
+- Markdown support for assistant responses (including code highlighting)
+- Real-time typing indicators
+- Responsive design for mobile and desktop
+- Session management with unique session IDs
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js (v16 or higher)
+- npm or yarn
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Clone this repository:
+```
+git clone <your-repo-url>
+cd ai-chat-interface
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2. Install dependencies:
+```
+npm install
+```
+or
+```
+yarn
+```
 
-### `npm run build`
+## Configuration
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The application is configured to connect to your API endpoint at `http://127.0.0.1:7860/api/v1/run/6f17d4f7-284b-40e3-9b81-213baf319f2c`. If you need to modify this:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Open `EnhancedApp.js`
+2. Find the `sendMessage` function
+3. Update the fetch URL to your API endpoint
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Running the Application
 
-### `npm run eject`
+To start the development server:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```
+npm start
+```
+or
+```
+yarn start
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Your application will be available at `http://localhost:3000`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Building for Production
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+To create a production build:
 
-## Learn More
+```
+npm run build
+```
+or
+```
+yarn build
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This will create optimized files in the `build` folder that you can deploy to your hosting provider.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Project Structure
 
-### Code Splitting
+- `src/App.js` - Basic chat interface component
+- `src/EnhancedApp.js` - Advanced chat interface with conversation history
+- `src/App.css` - Styles for the basic interface
+- `src/EnhancedApp.css` - Styles for the enhanced interface
+- `src/index.js` - Entry point for the React application
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## How It Works
 
-### Analyzing the Bundle Size
+The application sends messages to your API endpoint with this payload structure:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```json
+{
+  "input_value": "Your message here",
+  "output_type": "chat",
+  "input_type": "chat",
+  "session_id": "unique_session_id"
+}
+```
 
-### Making a Progressive Web App
+The response is expected to have an `output` field containing the AI's response.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Customization
 
-### Advanced Configuration
+### Styling
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+You can customize the appearance by modifying the CSS files:
+- `App.css` - For the basic interface
+- `EnhancedApp.css` - For the enhanced interface
 
-### Deployment
+### Adding Features
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Some potential enhancements you might want to implement:
+- File uploads
+- Voice input/output
+- API key management
+- Custom themes
+- Export conversation history
 
-### `npm run build` fails to minify
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT
