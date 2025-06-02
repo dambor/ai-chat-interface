@@ -6,7 +6,7 @@ import { useConversations } from '../contexts/ConversationContext';
 import './EnhancedChat.css';
 
 /**
- * Enhanced chat page component
+ * Enhanced chat page component without header (header is now in MainLayout)
  */
 const EnhancedChat = () => {
   const { activeConversation } = useConversations();
@@ -14,10 +14,6 @@ const EnhancedChat = () => {
   
   return (
     <div className="enhanced-chat">
-      <header className="chat-header">
-        <h1>AI Assistant</h1>
-      </header>
-      
       <main className="chat-main">
         <MessageList 
           messages={activeConversation ? activeConversation.messages : []}

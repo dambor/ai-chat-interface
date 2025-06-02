@@ -6,6 +6,12 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Prevent zooming on form inputs in iOS */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-family);
   background-color: var(--color-background);
@@ -13,6 +19,27 @@ body {
   line-height: 1.5;
   height: 100vh;
   overflow: hidden;
+  /* Prevent rubber band scrolling on iOS */
+  overscroll-behavior: none;
+  /* Improve font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent user selection of UI elements */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection in content areas */
+.message-content,
+.chat-input-textarea,
+input,
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 /* Typography */
@@ -40,10 +67,18 @@ p:last-child {
 a {
   color: var(--color-primary);
   text-decoration: none;
+  /* Improve touch targets */
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+a:active {
+  opacity: 0.7;
 }
 
 /* Code styling */
@@ -51,6 +86,8 @@ pre {
   margin: var(--spacing-lg) 0;
   border-radius: var(--border-radius-md);
   overflow: auto;
+  /* Smooth scrolling on touch devices */
+  -webkit-overflow-scrolling: touch;
 }
 
 code {
@@ -67,7 +104,7 @@ pre code {
   border-radius: 0;
 }
 
-/* Button styling */
+/* Button styling with improved touch targets */
 button {
   cursor: pointer;
   font-family: var(--font-family);
@@ -76,15 +113,40 @@ button {
   border: none;
   border-radius: var(--border-radius-md);
   padding: var(--spacing-sm) var(--spacing-lg);
-  transition: background-color var(--transition-fast);
+  transition: all var(--transition-fast);
+  /* Minimum touch target size */
+  min-height: 44px;
+  min-width: 44px;
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Remove tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+  opacity: 0.9;
 }
 
 button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
+  transform: none;
 }
 
-/* Input styling */
+button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Input styling with mobile considerations */
 input, textarea {
   font-family: var(--font-family);
   font-size: var(--font-size-md);
@@ -93,10 +155,18 @@ input, textarea {
   border-radius: var(--border-radius-md);
   padding: var(--spacing-sm);
   width: 100%;
+  transition: border-color var(--transition-fast);
+  /* Prevent zoom on iOS */
+  font-size: 16px;
+  /* Remove default iOS styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 input:focus, textarea:focus {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.1);
 }
 
 /* Utility classes */
@@ -128,9 +198,123 @@ input:focus, textarea:focus {
   border-width: 0;
 }
 
-/* Responsive utilities */
-@media (max-width: 768px) {
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-gray-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
+}
+
+/* Focus indicators for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Remove focus for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Tablet styles */
+@media (max-width: 768px) and (min-width: 481px) {
+  .hide-on-tablet {
+    display: none;
+  }
+
+  button {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  input, textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
   .hide-on-mobile {
     display: none;
+  }
+
+  body {
+    /* Prevent pull-to-refresh on mobile */
+    overscroll-behavior-y: none;
+  }
+
+  button {
+    min-height: 48px;
+    min-width: 48px;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  input, textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: var(--spacing-md);
+  }
+
+  h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  h2 {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  button {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  input, textarea {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Improve rendering on high DPI screens */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Dark mode support (if needed in the future) */
+@media (prefers-color-scheme: dark) {
+  /* CSS variables can be overridden here for dark mode */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+  body {
+    height: 100vh;
+    /* Account for mobile browser UI in landscape */
+    height: 100dvh;
   }
 }

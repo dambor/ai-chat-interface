@@ -1,31 +1,8 @@
 /**
- * Chat API service
+ * Enhanced Chat API service with better error handling
  * Handles all API calls to the chat backend
  */
-
-// API endpoint - can be updated at runtime
-let API_ENDPOINT = 'http://127.0.0.1:7860/api/v1/run/6f17d4f7-284b-40e3-9b81-213baf319f2c';
-
-/**
- * Update the API endpoint
- * @param {string} newEndpoint - The new API endpoint URL
- */
-export const updateApiEndpoint = (newEndpoint) => {
-  if (newEndpoint && typeof newEndpoint === 'string') {
-    API_ENDPOINT = newEndpoint;
-    console.log('API endpoint updated to:', API_ENDPOINT);
-    return true;
-  }
-  return false;
-};
-
-/**
- * Get the current API endpoint
- * @returns {string} - The current API endpoint URL
- */
-export const getApiEndpoint = () => {
-  return API_ENDPOINT;
-};
+import { getApiEndpoint } from './config';
 
 /**
  * Extract the API response content from various response formats
@@ -43,7 +20,14 @@ export const extractResponseContent = (data) => {
   // If data is a string, it might be:
   // 1. Plain text response
   // 2. JSON string that needs parsing
+  // 3. HTML error page (detect and handle)
   if (typeof data === 'string') {
+    // Check if it's HTML (error page)
+    if (data.trim().toLowerCase().startsWith('<!doctype html') || 
+        data.trim().toLowerCase().startsWith('<html')) {
+      return 'Error: The API returned an HTML page instead of a response. Please check your API endpoint URL.';
+    }
+    
     // Try to parse as JSON first, in case it's a JSON string
     try {
       const parsedData = JSON.parse(data);
@@ -51,7 +35,7 @@ export const extractResponseContent = (data) => {
       // If successfully parsed, recursively extract from the parsed object
       return extractResponseContent(parsedData);
     } catch (e) {
-      // Not valid JSON, return as plain text
+      // Not valid JSON, return as plain text (if it's not HTML)
       return data;
     }
   }
@@ -175,6 +159,34 @@ export const extractResponseContent = (data) => {
 };
 
 /**
+ * Validate API endpoint URL format
+ * @param {string} url - The URL to validate
+ * @returns {boolean} - Whether the URL appears to be a valid API endpoint
+ */
+const validateApiEndpoint = (url) => {
+  try {
+    const urlObj = new URL(url);
+    
+    // Check if it looks like an API endpoint
+    const path = urlObj.pathname.toLowerCase();
+    
+    // Common API patterns
+    const apiPatterns = [
+      '/api/',
+      '/v1/',
+      '/v2/',
+      '/run/',
+      '/chat/',
+      '/invoke'
+    ];
+    
+    return apiPatterns.some(pattern => path.includes(pattern));
+  } catch (e) {
+    return false;
+  }
+};
+
+/**
  * Send a message to the chat API
  * @param {string} message - The message content to send
  * @param {string} sessionId - The session ID for this conversation
@@ -182,6 +194,13 @@ export const extractResponseContent = (data) => {
  */
 export const sendChatMessage = async (message, sessionId) => {
   try {
+    const apiEndpoint = getApiEndpoint();
+    
+    // Validate the API endpoint
+    if (!validateApiEndpoint(apiEndpoint)) {
+      throw new Error(`Invalid API endpoint format: ${apiEndpoint}. Please check your configuration.`);
+    }
+    
     const payload = {
       "input_value": message,
       "output_type": "chat",
@@ -192,23 +211,56 @@ export const sendChatMessage = async (message, sessionId) => {
     const options = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify(payload)
     };
     
-    console.log('Sending request to:', API_ENDPOINT);
+    console.log('Sending request to:', apiEndpoint);
     console.log('With payload:', payload);
     
-    const response = await fetch(API_ENDPOINT, options);
+    const response = await fetch(apiEndpoint, options);
+    
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    
+    // Check content type
+    const contentType = response.headers.get('content-type');
+    console.log('Content-Type:', contentType);
     
     if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`);
+      // Try to get error details
+      let errorMessage = `API responded with status: ${response.status}`;
+      
+      try {
+        const errorText = await response.text();
+        if (errorText.includes('<!doctype html') || errorText.includes('<html')) {
+          errorMessage += '. The server returned an HTML page instead of JSON. Please verify your API endpoint URL.';
+        } else {
+          errorMessage += `. Error: ${errorText}`;
+        }
+      } catch (e) {
+        // Ignore error text parsing errors
+      }
+      
+      throw new Error(errorMessage);
+    }
+    
+    // Check if response is HTML instead of JSON
+    if (contentType && contentType.includes('text/html')) {
+      throw new Error('API returned HTML instead of JSON. Please check your API endpoint URL - it may be pointing to a web interface instead of the API.');
     }
     
     // Get response text first
     const responseText = await response.text();
     console.log('Raw API response text:', responseText);
+    
+    // Check if response is HTML
+    if (responseText.trim().toLowerCase().startsWith('<!doctype html') || 
+        responseText.trim().toLowerCase().startsWith('<html')) {
+      throw new Error('API returned an HTML page instead of JSON. Your API endpoint URL may be incorrect. Please check your configuration file.');
+    }
     
     // Try to parse as JSON
     let data;
@@ -216,6 +268,11 @@ export const sendChatMessage = async (message, sessionId) => {
       data = JSON.parse(responseText);
       console.log('Parsed API response:', data);
     } catch (e) {
+      // If it's not valid JSON, check if it's an error message
+      if (responseText.includes('error') || responseText.includes('Error')) {
+        throw new Error(`API Error: ${responseText}`);
+      }
+      
       // If it's not valid JSON, use the text directly
       console.log('Response is not valid JSON, using text directly');
       data = responseText;
@@ -228,7 +285,45 @@ export const sendChatMessage = async (message, sessionId) => {
     return { output: extractedContent };
   } catch (error) {
     console.error('Error sending message to API:', error);
+    
+    // Provide more helpful error messages
+    if (error.message.includes('fetch')) {
+      throw new Error(`Network error: Unable to connect to the API at ${getApiEndpoint()}. Please check your internet connection and API endpoint.`);
+    }
+    
     throw error;
+  }
+};
+
+/**
+ * Test the API endpoint connectivity
+ * @returns {Promise<Object>} - Test result
+ */
+export const testApiEndpoint = async () => {
+  try {
+    const apiEndpoint = getApiEndpoint();
+    
+    console.log('Testing API endpoint:', apiEndpoint);
+    
+    // Simple connectivity test
+    const response = await fetch(apiEndpoint, {
+      method: 'HEAD',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
+    return {
+      success: true,
+      status: response.status,
+      message: `API endpoint is reachable (Status: ${response.status})`
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message,
+      message: `Failed to reach API endpoint: ${error.message}`
+    };
   }
 };
 

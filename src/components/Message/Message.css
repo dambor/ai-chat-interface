@@ -5,6 +5,8 @@
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 16px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .user-message {
@@ -25,6 +27,7 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 8px;
+  align-items: center;
 }
 
 .message-sender {
@@ -35,6 +38,8 @@
 .message-time {
   color: #6b7280;
   font-size: 12px;
+  flex-shrink: 0;
+  margin-left: 8px;
 }
 
 .message-content {
@@ -42,9 +47,10 @@
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-/* Markdown styles */
+/* Markdown styles with mobile considerations */
 .message-content p {
   margin-bottom: 16px;
 }
@@ -63,6 +69,7 @@
   margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
+  word-wrap: break-word;
 }
 
 .message-content h1 {
@@ -95,17 +102,20 @@
   margin-bottom: 8px;
 }
 
-/* Table styles */
+/* Table styles with mobile responsiveness */
 .table-container {
   overflow-x: auto;
   margin: 16px 0;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
 }
 
 .message-content table {
   border-collapse: collapse;
   width: 100%;
   margin: 0;
-  table-layout: auto;
+  min-width: 300px; /* Ensure tables don't get too narrow */
 }
 
 .message-content th,
@@ -113,22 +123,29 @@
   border: 1px solid #e5e7eb;
   padding: 8px 12px;
   text-align: left;
+  word-wrap: break-word;
+  max-width: 200px; /* Prevent cells from getting too wide on mobile */
 }
 
 .message-content th {
   background-color: #f3f4f6;
   font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .message-content tr:nth-child(even) {
   background-color: #f9fafb;
 }
 
-/* Code and pre styles */
+/* Code and pre styles with mobile optimization */
 .message-content pre {
   margin: 16px 0;
   border-radius: 6px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 .message-content code {
@@ -142,6 +159,7 @@
   padding: 2px 4px;
   border-radius: 4px;
   color: #1f2937;
+  word-break: break-all; /* Allow breaking of long code snippets */
 }
 
 /* Blockquote styles */
@@ -153,20 +171,174 @@
   font-style: italic;
 }
 
-/* Links */
+/* Links with better touch targets */
 .message-content a {
   color: #2563eb;
   text-decoration: none;
+  padding: 2px 0; /* Slightly larger touch target */
 }
 
 .message-content a:hover {
   text-decoration: underline;
 }
 
-/* Images */
+/* Images with mobile optimization */
 .message-content img {
   max-width: 100%;
   height: auto;
   margin: 16px 0;
   border-radius: 6px;
+  display: block;
+}
+
+/* Tablet styles */
+@media (max-width: 768px) and (min-width: 481px) {
+  .message {
+    padding: 14px;
+    margin-bottom: 14px;
+  }
+
+  .message-content {
+    font-size: 15px;
+  }
+
+  .message-content h1 {
+    font-size: 22px;
+  }
+
+  .message-content h2 {
+    font-size: 19px;
+  }
+
+  .message-content h3 {
+    font-size: 17px;
+  }
+
+  .message-content th,
+  .message-content td {
+    padding: 6px 10px;
+    max-width: 150px;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 480px) {
+  .message {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+  }
+
+  .message-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  .message-sender {
+    font-size: 13px;
+  }
+
+  .message-time {
+    font-size: 11px;
+    margin-left: 0;
+  }
+
+  .message-content {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .message-content h1 {
+    font-size: 20px;
+    margin-top: 16px;
+    margin-bottom: 12px;
+  }
+
+  .message-content h2 {
+    font-size: 18px;
+    margin-top: 16px;
+    margin-bottom: 12px;
+  }
+
+  .message-content h3 {
+    font-size: 16px;
+    margin-top: 14px;
+    margin-bottom: 10px;
+  }
+
+  .message-content h4 {
+    font-size: 15px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+
+  .message-content ul,
+  .message-content ol {
+    padding-left: 20px;
+    margin: 12px 0;
+  }
+
+  .message-content li {
+    margin-bottom: 6px;
+  }
+
+  .message-content th,
+  .message-content td {
+    padding: 6px 8px;
+    font-size: 14px;
+    max-width: 120px;
+  }
+
+  .message-content code {
+    font-size: 13px;
+  }
+
+  .message-content p code,
+  .message-content li code {
+    padding: 1px 3px;
+    font-size: 12px;
+  }
+
+  .message-content blockquote {
+    padding-left: 12px;
+    margin: 12px 0;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .message {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .message-content {
+    font-size: 14px;
+  }
+
+  .message-content h1 {
+    font-size: 18px;
+  }
+
+  .message-content h2 {
+    font-size: 16px;
+  }
+
+  .message-content h3 {
+    font-size: 15px;
+  }
+
+  .message-content th,
+  .message-content td {
+    padding: 4px 6px;
+    font-size: 13px;
+    max-width: 100px;
+  }
+
+  .message-content ul,
+  .message-content ol {
+    padding-left: 16px;
+  }
 }
