@@ -1,5 +1,5 @@
 {
-  "apiEndpoint": "https://absolutely-arriving-hare.ngrok-free.app/api/v1/run/a84f7f15-44ca-4bb9-9191-f10843b2bae9",
+  "apiEndpoint": "http://191.252.181.81:7860/api/v1/run/959622f1-89de-47cd-836f-0a6c8b48848a",
   "appTitle": "AI Chat Interface",
   "features": {
     "enableDebugMode": false,
