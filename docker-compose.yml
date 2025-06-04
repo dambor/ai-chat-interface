@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  ai-chat-app:
+    image: glenioborges/ai-chat-ui:latest
+    container_name: ai-chat-interface
+    ports:
+      - "80:80"  # Map host port 80 to container port 80
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Mount config file to allow runtime configuration
+      - ./public/config.json:/usr/share/nginx/html/config.json:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-chat-network
+
+networks:
+  ai-chat-network:
+    driver: bridge
