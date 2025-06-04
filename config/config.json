@@ -1,0 +1,15 @@
+{
+  "apiEndpoint": "http://191.252.181.81:7860/api/v1/run/959622f1-89de-47cd-836f-0a6c8b48848a?stream=false",
+  "appTitle": "AI Chat Interface",
+  "features": {
+    "enableDebugMode": false,
+    "enableMarkdownSupport": true,
+    "maxMessageLength": 4000,
+    "autoSaveConversations": true
+  },
+  "ui": {
+    "theme": "light",
+    "sidebarDefaultOpen": true,
+    "showTypingIndicator": true
+  }
+}

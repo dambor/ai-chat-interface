@@ -1,19 +1,46 @@
-version: '2.2'
+version: '3.8'
 
 services:
-  ai-chat-app:
-    image: glenioborges/ai-chat-ui:latest
+  ai-chat-interface:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: ai-chat-interface
     ports:
-      - "80:80"
-    environment:
-      - NODE_ENV=production
+      - "3000:80"
     volumes:
-      - ./public/config.json:/usr/share/nginx/html/config.json:ro
+      # Mount external config file - this allows changing API settings without rebuilding
+      - ./config/config.json:/usr/share/nginx/html/config.json:ro
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    environment:
+      - NODE_ENV=production
+    networks:
+      - ai-chat-network
+
+networks:
+  ai-chat-network:
+    driver: bridge
+
+# Optional: For development with hot reload
+# Uncomment the service below if you want a development version
+# 
+# services:
+#   ai-chat-dev:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile.dev
+#     ports:
+#       - "3001:3000"
+#     volumes:
+#       - .:/app
+#       - /app/node_modules
+#       - ./config/config.json:/app/public/config.json:ro
+#     environment:
+#       - NODE_ENV=development
+#       - CHOKIDAR_USEPOLLING=true

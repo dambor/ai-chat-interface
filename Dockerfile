@@ -1,4 +1,4 @@
-# Multi-stage build for production
+# Multi-stage build for React application
 FROM node:18-alpine AS builder
 
 # Set working directory
@@ -16,24 +16,27 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage
+# Production stage with nginx
 FROM nginx:alpine
-
-# Copy built application from builder stage
-COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Create directory for logs
-RUN mkdir -p /var/log/nginx
+# Copy built application from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Create directory for config file
+RUN mkdir -p /usr/share/nginx/html
+
+# Copy default config (will be overridden by volume mount)
+COPY public/config.json /usr/share/nginx/html/config.json
 
 # Expose port 80
 EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
